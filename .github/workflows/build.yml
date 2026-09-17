@@ -1,0 +1,44 @@
+name: Build Outlaw Dylib
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      run: |
+        brew install lz4 libarchive
+
+    - name: Set up Theos
+      run: |
+        git clone --recursive https://github.com/theos/theos.git $HOME/theos
+        echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+        echo "$HOME/theos/bin" >> $GITHUB_PATH
+
+    - name: Download iOS SDK
+      run: |
+        curl -LO https://github.com/theos/sdks/releases/download/v14.5/iPhoneOS14.5.sdk.tar.xz
+        mkdir -p $HOME/theos/sdks
+        tar -xf iPhoneOS14.5.sdk.tar.xz -C $HOME/theos/sdks
+        rm iPhoneOS14.5.sdk.tar.xz
+
+    - name: Build Tweak (.dylib)
+      run: |
+        make clean
+        make FINALPACKAGE=1
+
+    - name: Upload Outlaw Dylib Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Outlaw-Dylib
+        path: .theos/obj/debug/Outlaw.dylib
