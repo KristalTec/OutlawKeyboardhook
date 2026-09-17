@@ -4,7 +4,7 @@ ARCHS = arm64 arm64e
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = Outlaw
-Outlaw_FILES = KeyboardPremiumTweak.xm
+Outlaw_FILES = Tweak.xm
 Outlaw_CFLAGS = -fobjc-arc -Iinclude
 Outlaw_LDFLAGS = -Llib -lsubstrate
 
