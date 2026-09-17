@@ -23,10 +23,14 @@ jobs:
 
     - name: Download iOS SDK
       run: |
-        curl -LO https://github.com/theos/sdks/releases/download/v14.5/iPhoneOS14.5.sdk.tar.xz
+        SDK_RELEASE_TAG=master-146e41f
+        SDK_ARCHIVE=iPhoneOS14.5.sdk.tar.xz
+        curl --fail --location --retry 3 --output "$SDK_ARCHIVE" \
+          "https://github.com/theos/sdks/releases/download/${SDK_RELEASE_TAG}/${SDK_ARCHIVE}"
+        tar -tJf "$SDK_ARCHIVE" >/dev/null
         mkdir -p $HOME/theos/sdks
-        tar -xf iPhoneOS14.5.sdk.tar.xz -C $HOME/theos/sdks
-        rm iPhoneOS14.5.sdk.tar.xz
+        tar -xJf "$SDK_ARCHIVE" -C $HOME/theos/sdks
+        rm "$SDK_ARCHIVE"
 
     - name: Build Tweak (.dylib)
       run: |
