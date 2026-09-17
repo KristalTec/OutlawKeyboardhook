@@ -37,6 +37,7 @@ static BOOL             g_initialized    = NO;
 static bool (*orig_isActive)(void *self)                = NULL;
 static bool (*orig_allowsPaidLayouts)(void *self)       = NULL;
 static BOOL (*orig_receiptHasTransactions)(id self, SEL _cmd, id data) = NULL;
+static void *(*orig_shared)(void)                       = NULL;
 
 // ============================================================
 //  REPLACEMENT HOOKS — Always Allow
@@ -54,6 +55,10 @@ static bool hook_allowsPaidLayouts(void *self) {
 static BOOL hook_receiptHasTransactions(id self, SEL _cmd, id data) {
     (void)self; (void)_cmd; (void)data;
     return YES;
+}
+
+static void *hook_shared(void) {
+    return orig_shared ? orig_shared() : NULL;
 }
 
 // ============================================================
@@ -388,11 +393,6 @@ static BOOL install_objc_hook(const char *label,
         //  Ghidra: 0x100ae4410 → offset 0xAE4410
         //  گەرەنتی دەکەین singleton هەرگیز نەگەڕێتەوە null
         // ----------------------------------------------------------
-        static void *(*orig_shared)(void) = NULL;
-        static void *hook_shared(void) {
-            void *s = orig_shared ? orig_shared() : NULL;
-            return s;  // هیچ دەستکارییەک — تەنها گەرەنتی null-check
-        }
         install_hook(
             "SubscriptionStatus.shared",
             "$s12KeyboardCore15SettingsManagerCA2A18SubscriptionStatusVRszrlE6sharedACyAEGvau",
