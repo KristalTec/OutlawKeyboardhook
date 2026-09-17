@@ -15,6 +15,9 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
+    - name: Install Build Dependencies
+      run: brew install ldid
+
     - name: Set up Theos
       run: |
         git clone --recursive https://github.com/theos/theos.git $HOME/theos
